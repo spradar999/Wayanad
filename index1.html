@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wayanad Landslide - Before & After</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+
+        .main-container {
+            display: flex;
+            width: 90%;
+            max-width: 1200px;
+            height: 90vh;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .container {
+            position: relative;
+            flex: 1;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .image-container {
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
+
+        .image1, .image2 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image2 {
+            clip-path: inset(100% 0 0 0);
+        }
+
+        .slider-bar {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 100%;
+            height: 1px;
+            background-color: red;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .label {
+            position: absolute;
+            font-weight: bold;
+            transition: opacity 0.3s ease;
+            left: 10px;
+            opacity: 0;
+        }
+
+        .label.before {
+            color: blue;
+        }
+
+        .label.after {
+            color: red;
+        }
+
+        .writeup {
+            width: 400px;
+            max-height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .writeup h2 {
+            margin-top: 0;
+        }
+
+        /* Mobile and tablet responsiveness */
+        @media only screen and (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .writeup {
+                width: 100%;
+                max-width: none;
+                margin-top: 20px;
+            }
+
+            .container {
+                height: 300px; /* Adjust as needed for smaller screens */
+            }
+        }
+
+        /* Adjustments for very small screens (mobile phones) */
+        @media only screen and (max-width: 480px) {
+            .writeup {
+                padding: 15px;
+            }
+
+            .main-container {
+                gap: 10px;
+            }
+
+            .container {
+                height: 250px; /* Further adjust as needed */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="container">
+            <div class="image-container">
+                <img src="./after-xl.jpg" alt="After Image" class="image1">
+                <img src="./before-xl.jpg" alt="Before Image" class="image2">
+                <div class="slider-bar"></div>
+                <div class="label before">Before</div>
+                <div class="label after">After</div>
+            </div>
+        </div>
+        <div class="writeup">
+            <h2>Wayanad Landslide (Chooralmala, Kerala)</h2>
+            <p>A major debris flow was triggered by heavy rainfall in and around the
+                Chooralmala town of Wayanad District in Kerala state of India.
+                As per latest reports: </p>
+            <ul>
+                <li>More than 300 people have lost their lives.</li>
+                <li>The areal extent of the landslide is 86,000 sq.m.</li>
+                <li>The crown is located at an approximate
+                    elevation of ~1,550 m above MSL</li>
+            </ul>
+            <h3>How It Works</h3>
+            <p>Scroll down to gradually reveal the "After" image, showcasing the post-landslide impact.</p>
+        </div>
+    </div>
+    <script>
+        let position = 0;
+
+        function updateClipPath() {
+            const image2 = document.querySelector('.image2');
+            const sliderBar = document.querySelector('.slider-bar');
+            const container = document.querySelector('.container');
+            const containerHeight = container.offsetHeight;
+
+            image2.style.clipPath = `inset(${position}% 0 0 0)`;
+
+            if (position > 5) {
+                sliderBar.style.opacity = '1';
+                document.querySelector('.label.before').style.opacity = '1';
+                document.querySelector('.label.after').style.opacity = '1';
+            } else {
+                sliderBar.style.opacity = '0';
+                document.querySelector('.label.before').style.opacity = '0';
+                document.querySelector('.label.after').style.opacity = '0';
+            }
+
+            sliderBar.style.top = `${position}%`;
+            document.querySelector('.label.after').style.top = `${(position / 100) * containerHeight - 20}px`;
+            document.querySelector('.label.before').style.top = `${(position / 100) * containerHeight + 10}px`;
+        }
+
+        window.addEventListener('wheel', (event) => {
+            event.preventDefault();
+            position += event.deltaY > 0 ? 2 : -2;
+            position = Math.max(0, Math.min(position, 100));
+            updateClipPath();
+        });
+
+        updateClipPath();
+    </script>
+</body>
+</html>
