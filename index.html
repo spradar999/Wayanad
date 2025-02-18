@@ -28,6 +28,7 @@
             flex: 1;
             height: 100%;
             overflow: hidden;
+            cursor: grab;
         }
 
         .image-container {
@@ -47,6 +48,7 @@
 
         .image2 {
             clip-path: inset(100% 0 0 0);
+            transition: clip-path 0.1s ease-out;
         }
 
         .slider-bar {
@@ -54,7 +56,7 @@
             top: 0;
             left: 50%;
             width: 100%;
-            height: 1px;
+            height: 2px;
             background-color: red;
             transform: translateX(-50%);
             opacity: 0;
@@ -105,7 +107,7 @@
             }
 
             .container {
-                height: 300px; /* Adjust as needed for smaller screens */
+                height: 300px;
             }
         }
 
@@ -120,17 +122,17 @@
             }
 
             .container {
-                height: 250px; /* Further adjust as needed */
+                height: 250px;
             }
         }
     </style>
 </head>
 <body>
     <div class="main-container">
-        <div class="container">
+        <div class="container" aria-label="Before and After Image Comparison">
             <div class="image-container">
-                <img src="./after-xl.jpg" alt="After Image" class="image1">
-                <img src="./before-xl.jpg" alt="Before Image" class="image2">
+                <img src="./after-xl.jpg" alt="After the landslide in Wayanad" class="image1">
+                <img src="./before-xl.jpg" alt="Before the landslide in Wayanad" class="image2">
                 <div class="slider-bar"></div>
                 <div class="label before">Before</div>
                 <div class="label after">After</div>
@@ -148,41 +150,75 @@
                     elevation of ~1,550 m above MSL</li>
             </ul>
             <h3>How It Works</h3>
-            <p>Scroll down to gradually reveal the "After" image, showcasing the post-landslide impact.</p>
+            <p>Scroll or drag up/down to gradually reveal the "After" image, showcasing the post-landslide impact.</p>
         </div>
     </div>
     <script>
         let position = 0;
+        let isDragging = false;
+        const image2 = document.querySelector('.image2');
+        const sliderBar = document.querySelector('.slider-bar');
+        const container = document.querySelector('.container');
+        const beforeLabel = document.querySelector('.label.before');
+        const afterLabel = document.querySelector('.label.after');
 
         function updateClipPath() {
-            const image2 = document.querySelector('.image2');
-            const sliderBar = document.querySelector('.slider-bar');
-            const container = document.querySelector('.container');
             const containerHeight = container.offsetHeight;
-
             image2.style.clipPath = `inset(${position}% 0 0 0)`;
+
+            sliderBar.style.top = `${position}%`;
+            afterLabel.style.top = `${(position / 100) * containerHeight - 20}px`;
+            beforeLabel.style.top = `${(position / 100) * containerHeight + 10}px`;
 
             if (position > 5) {
                 sliderBar.style.opacity = '1';
-                document.querySelector('.label.before').style.opacity = '1';
-                document.querySelector('.label.after').style.opacity = '1';
+                beforeLabel.style.opacity = '1';
+                afterLabel.style.opacity = '1';
             } else {
                 sliderBar.style.opacity = '0';
-                document.querySelector('.label.before').style.opacity = '0';
-                document.querySelector('.label.after').style.opacity = '0';
+                beforeLabel.style.opacity = '0';
+                afterLabel.style.opacity = '0';
             }
-
-            sliderBar.style.top = `${position}%`;
-            document.querySelector('.label.after').style.top = `${(position / 100) * containerHeight - 20}px`;
-            document.querySelector('.label.before').style.top = `${(position / 100) * containerHeight + 10}px`;
         }
 
-        window.addEventListener('wheel', (event) => {
+        function handleScroll(event) {
             event.preventDefault();
             position += event.deltaY > 0 ? 2 : -2;
             position = Math.max(0, Math.min(position, 100));
-            updateClipPath();
-        });
+            requestAnimationFrame(updateClipPath);
+        }
+
+        function handleTouchMove(event) {
+            const touch = event.touches[0];
+            const rect = container.getBoundingClientRect();
+            const percentage = ((touch.clientY - rect.top) / rect.height) * 100;
+            position = Math.max(0, Math.min(percentage, 100));
+            requestAnimationFrame(updateClipPath);
+        }
+
+        function handleMouseDown(event) {
+            isDragging = true;
+            container.style.cursor = "grabbing";
+        }
+
+        function handleMouseUp() {
+            isDragging = false;
+            container.style.cursor = "grab";
+        }
+
+        function handleMouseMove(event) {
+            if (!isDragging) return;
+            const rect = container.getBoundingClientRect();
+            const percentage = ((event.clientY - rect.top) / rect.height) * 100;
+            position = Math.max(0, Math.min(percentage, 100));
+            requestAnimationFrame(updateClipPath);
+        }
+
+        window.addEventListener('wheel', handleScroll);
+        container.addEventListener('touchmove', handleTouchMove);
+        container.addEventListener('mousedown', handleMouseDown);
+        window.addEventListener('mouseup', handleMouseUp);
+        window.addEventListener('mousemove', handleMouseMove);
 
         updateClipPath();
     </script>
