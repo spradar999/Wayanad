@@ -16,7 +16,7 @@
 
         .main-container {
             display: flex;
-            width: 90%;
+            width: 100%;  /* Ensure the container uses full width */
             max-width: 1200px;
             height: 90vh;
             gap: 20px;
@@ -28,6 +28,7 @@
             flex: 1;
             height: 100%;
             overflow: hidden;
+            touch-action: none; /* Prevent default scroll behavior during touch interaction */
         }
 
         .image-container {
