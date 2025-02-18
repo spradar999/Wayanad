@@ -148,20 +148,18 @@
                     elevation of ~1,550 m above MSL</li>
             </ul>
             <h3>How It Works</h3>
-            <p>Swipe to gradually reveal the "After" image, showcasing the post-landslide impact.</p>
+            <p>Scroll down to gradually reveal the "After" image, showcasing the post-landslide impact.</p>
         </div>
     </div>
     <script>
         let position = 0;
-        let isMouseDown = false;
-        let startX = 0;
 
-        const image2 = document.querySelector('.image2');
-        const sliderBar = document.querySelector('.slider-bar');
-        const container = document.querySelector('.container');
-        
         function updateClipPath() {
+            const image2 = document.querySelector('.image2');
+            const sliderBar = document.querySelector('.slider-bar');
+            const container = document.querySelector('.container');
             const containerHeight = container.offsetHeight;
+
             image2.style.clipPath = `inset(${position}% 0 0 0)`;
 
             if (position > 5) {
@@ -179,33 +177,10 @@
             document.querySelector('.label.before').style.top = `${(position / 100) * containerHeight + 10}px`;
         }
 
-        // For desktop click-and-drag event
-        container.addEventListener('mousedown', (event) => {
-            isMouseDown = true;
-            startX = event.clientX;
-        });
-
-        container.addEventListener('mousemove', (event) => {
-            if (!isMouseDown) return;
-            let dx = event.clientX - startX;
-            position = Math.max(0, Math.min(100, position + (dx / container.offsetWidth) * 100));
-            startX = event.clientX;
-            updateClipPath();
-        });
-
-        container.addEventListener('mouseup', () => {
-            isMouseDown = false;
-        });
-
-        // For mobile swipe events
-        container.addEventListener('touchstart', (event) => {
-            startX = event.touches[0].clientX;
-        });
-
-        container.addEventListener('touchmove', (event) => {
-            let dx = event.touches[0].clientX - startX;
-            position = Math.max(0, Math.min(100, position + (dx / container.offsetWidth) * 100));
-            startX = event.touches[0].clientX;
+        window.addEventListener('wheel', (event) => {
+            event.preventDefault();
+            position += event.deltaY > 0 ? 2 : -2;
+            position = Math.max(0, Math.min(position, 100));
             updateClipPath();
         });
 
