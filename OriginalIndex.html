@@ -1,0 +1,209 @@
+o<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wayanad Landslide - Before & After</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #111;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .wrapper {
+            display: flex;
+            flex-direction: row;
+            width: 90%;
+            max-width: 1200px;
+            align-items: center;
+        }
+
+        .container {
+            position: relative;
+            width: 50%;
+            height: 80vh;
+            overflow: hidden;
+            touch-action: none; /* Prevent default touch scrolling */
+        }
+
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .image1, .image2 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image2 {
+            clip-path: inset(100% 0 0 0); /* Initially hidden */
+        }
+
+        .slider-bar {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background-color: white;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .label {
+            position: absolute;
+            font-weight: bold;
+            transition: opacity 0.3s ease;
+            left: 10px;
+            opacity: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .label.before {
+            color: white;
+        }
+
+        .label.after {
+            color: white;
+        }
+
+        .text-content {
+            width: 50%;
+            padding: 20px;
+        }
+
+        h2, h3 {
+            color: #ffcc00;
+        }
+
+        /* Responsive for Mobile */
+        @media (max-width: 768px) {
+            .wrapper {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .container {
+                width: 100%;
+                height: 50vh;
+            }
+
+            .text-content {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="container">
+            <div class="image-container">
+                <img src="after-xl.jpg" alt="Before Landslide" class="image1">
+                <img src="before-xl.jpg" alt="After Landslide" class="image2">
+                <div class="slider-bar"></div>
+                <div class="label before">Before</div>
+                <div class="label after">After</div>
+            </div>
+        </div>
+
+        <div class="text-content">
+            <h2>Wayanad Landslide (Chooralmala, Kerala)</h2>
+            <p>A major debris flow was triggered by heavy rainfall on 30 July 2024 in 
+                Chooralmala town of Wayanad District in Kerala state of India.
+                As per latest reports:</p>
+            <ul>
+                <li>More than 300 people have lost their lives.</li>
+                <li>The areal extent of the landslide is 86,000 sq.m.</li>
+                <li>The crown is located at an approximate
+                    elevation of ~1,550 m above MSL</li>
+            </ul>
+            <h3>How It Works</h3>
+            <p>Scroll up/down or swipe up/down to gradually reveal the "After" image.</p>
+        </div>
+    </div>
+
+    <script>
+        let position = 0;
+        let startY = 0; 
+
+        function updateClipPath() {
+            const image2 = document.querySelector('.image2');
+            const sliderBar = document.querySelector('.slider-bar');
+            const container = document.querySelector('.container');
+            const containerHeight = container.offsetHeight;
+
+            image2.style.clipPath = `inset(${position}% 0 0 0)`;
+
+            if (position > 5) {
+                sliderBar.style.opacity = '1';
+                document.querySelector('.label.before').style.opacity = '1';
+                document.querySelector('.label.after').style.opacity = '1';
+            } else {
+                sliderBar.style.opacity = '0';
+                document.querySelector('.label.before').style.opacity = '0';
+                document.querySelector('.label.after').style.opacity = '0';
+            }
+
+            sliderBar.style.top = `${position}%`;
+
+            const beforeLabel = document.querySelector('.label.before');
+            const afterLabel = document.querySelector('.label.after');
+
+            afterLabel.style.top = `${(position / 100) * containerHeight - 20}px`;
+            beforeLabel.style.top = `${(position / 100) * containerHeight + 10}px`;
+        }
+
+        document.addEventListener('wheel', (event) => {
+            event.preventDefault();
+
+            if (event.deltaY > 0) {
+                position += 2;
+            } else {
+                position -= 2;
+            }
+
+            position = Math.max(0, Math.min(position, 100));
+            updateClipPath();
+        });
+
+        // Touch Events for Mobile
+        document.addEventListener('touchstart', (event) => {
+            startY = event.touches[0].clientY;
+        });
+
+        document.addEventListener('touchmove', (event) => {
+            event.preventDefault();
+            let moveY = event.touches[0].clientY;
+            let diff = startY - moveY;
+
+            if (diff > 0) {
+                position += 2; // Swipe Up
+            } else {
+                position -= 2; // Swipe Down
+            }
+
+            position = Math.max(0, Math.min(position, 100));
+            updateClipPath();
+            startY = moveY;
+        });
+
+        updateClipPath();
+    </script>
+</body>
+</html>
